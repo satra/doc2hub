@@ -1,1 +1,6 @@
 Converts Google docs to git repos
+
+uses google api from here:
+
+hg clone https://gdata-python-client.googlecode.com/hg/ gdata-python-client
+

@@ -3,11 +3,11 @@
 
 from doc2hub.gd2gh import Converter
 
-email_map = {'binarybottle@gmail.com': "Arno Klein",
-             'jbpoline@gmail.com': "Jean-Baptiste Poline",
-             'millman.ucb@gmail.com': "Jarrod Millman",
-             'satrajit.ghosh@gmail.com': "Satrajit Ghosh",
-             'stnava@gmail.com': "Brian Avants"}
+email_map = {'binary...com': "Arno Klein",
+             'jbpol...com': "Jean-Baptiste Poline",
+             'mill...com': "Jarrod Millman",
+             'satra...com': "Satrajit Ghosh",
+             'stnav...com': "Brian Avants"}
 
 docname='OpenEvaluationArticle'
 dirname ='testconversion'

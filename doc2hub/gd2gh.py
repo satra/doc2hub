@@ -18,6 +18,7 @@ author mapping between google and github
 import json
 import os
 import re
+import subprocess
 
 import gdata.docs.data
 import gdata.docs.client
@@ -65,21 +66,41 @@ class Converter(object):
         else:
             raise ValueError('multiple entries for %s'%docname)
         pwd = os.getcwd()
-        os.mkdir(dirname)
-        os.chdir(dirname)
-        os.system('git init')
+        starting_revision = -1
+        if os.path.exists(dirname):
+            os.chdir(dirname)
+            proc = subprocess.Popen('git log HEAD^..HEAD',
+                                    shell=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+            o,e = proc.communicate()
+            if 'revision:' in o:
+                starting_revision = int(o.split('revision:')[-1].split(' ')[-1])
+        else:
+            os.mkdir(dirname)
+            os.chdir(dirname)
+            os.system('git init')
         revision_feed = self._client.get_revisions(entry.resource_id.text)
         for rev in revision_feed.entry:
+            revision_number = int(rev.id.text.split('/')[-1])
+            if revision_number <= starting_revision:
+                continue
             email = rev.author[0].email.text
-            name = author_map[email]
+            if email in author_map:
+                name = author_map[email]
+            else:
+                name = email
             date = rev.updated.text
             self._client.Export(rev.content.src, '/tmp/%s.zip'%docname)
+            os.system('rm -rf images')
             os.system('unzip -o /tmp/%s.zip'%docname)
             os.system('pandoc -f html -t rst -o %s.rst %s.html'%(docname, docname))
             if os.path.exists('images'):
                 os.system('git add %s.rst images/*.png'%docname)
             else:
                 os.system('git add %s.rst'%docname)
-            os.system('git commit --date=%s --author="%s <%s>" -m "ref:%s"'%(date, name, email, rev.id.text))
-            print "finished converting revision: %s"%rev.id.text.split('/')[-1]
+            os.system('git commit --date=%s --author="%s <%s>" -m "revision: %d"'%(date, name, email, revision_number))
+            if starting_revision > -1:
+                os.system('git push origin master')
+            print "finished converting revision: %d"%revision_number
         os.chdir(pwd)

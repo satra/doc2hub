@@ -51,10 +51,10 @@ class Converter(object):
                     print folder.title
 
     def get_entries(self, docname):
-        feed = self._client.GetDocList(uri='/feeds/default/private/full?title=%s&title-exact=false&max-results=5'%docname)
-        if not feed.entry:
+        feed = self._client.GetAllResources(uri='/feeds/default/private/full?title=%s&title-exact=false&max-results=5'%docname)
+        if not feed:
             raise ValueError('No entries in feed.')
-        return feed.entry
+        return feed
 
     def get_revisions(self, entry):
         return self._client.GetRevisions(entry)
@@ -80,7 +80,7 @@ class Converter(object):
             os.mkdir(dirname)
             os.chdir(dirname)
             os.system('git init')
-        revision_feed = self._client.get_revisions(entry.resource_id.text)
+        revision_feed = self._client.get_revisions(entry)
         for rev in revision_feed.entry:
             revision_number = int(rev.id.text.split('/')[-1])
             if revision_number <= starting_revision:
@@ -91,7 +91,9 @@ class Converter(object):
             else:
                 name = email
             date = rev.updated.text
-            self._client.Export(rev.content.src, '/tmp/%s.zip'%docname)
+            self._client.download_archive(rev,
+                                          '/tmp/%s.zip'%docname,
+                                          {'exportFormat': 'zip'})
             os.system('rm -rf images')
             os.system('unzip -o /tmp/%s.zip'%docname)
             os.system('pandoc -f html -t rst -o %s.rst %s.html'%(docname, docname))

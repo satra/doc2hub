@@ -6,9 +6,10 @@ Config options needed are:
 
 gmail_username
 gmail_password
+github_username
+github_password
 
-github username
-github password
+store in json file
 
 google_doc url
 

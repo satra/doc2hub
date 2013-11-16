@@ -8,7 +8,7 @@
 import sys
 
 
-def configuration(parent_package='',top_path=None):
+def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
 
     config = Configuration(None, parent_package, top_path)
@@ -24,12 +24,12 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('doc2hub', 'doc2hub')
     return config
 
-################################################################################
+###############################################################################
 # For some commands, use setuptools
 
-if len(set(('develop', 'bdist_egg', 'bdist_rpm', 'bdist', 'bdist_dumb',
-            'bdist_wininst', 'install_egg_info', 'egg_info', 'easy_install',
-            )).intersection(sys.argv)) > 0:
+if len({'develop', 'bdist_egg', 'bdist_rpm', 'bdist', 'bdist_dumb',
+        'bdist_wininst', 'install_egg_info', 'egg_info',
+        'easy_install'}.intersection(sys.argv)) > 0:
     from setup_egg import extra_setuptools_args
 
 # extra_setuptools_args can be defined from the line above, but it can
@@ -39,7 +39,7 @@ if not 'extra_setuptools_args' in globals():
     extra_setuptools_args = dict()
 
 
-################################################################################
+###############################################################################
 # Import the documentation building classes.
 
 try:
@@ -50,7 +50,7 @@ except ImportError:
     cmdclass = {}
 
 
-################################################################################
+###############################################################################
 
 desc = """Google Docs provides a very nice interface for collaborative editing,
 but lacks a good interface for change tracking and review. GitHub on the other
@@ -60,19 +60,20 @@ This project converts Google Docs to a text format (html, rst, markdown) and
 captures the history from Google Docs into a git repository on GitHub
 """
 
+
 def main(**extra_args):
     from numpy.distutils.core import setup
 
-    setup( name = 'doc2hub',
-           description = 'Converts Google Docs to Github projects',
-           author = 'Satrajit Ghosh',
-           author_email = 'satra@mit.edu',
-           url = 'http://doc2hub.github.com',
-           long_description = desc,
-           configuration = configuration,
-           cmdclass = cmdclass,
-           requires=[],
-           **extra_args)
+    setup(name='doc2hub',
+          description='Converts Google Docs to Github projects',
+          author='Satrajit Ghosh',
+          author_email='satra@mit.edu',
+          url='http://doc2hub.github.com',
+          long_description=desc,
+          configuration=configuration,
+          cmdclass=cmdclass,
+          requires=[],
+          **extra_args)
 
 
 if __name__ == "__main__":
